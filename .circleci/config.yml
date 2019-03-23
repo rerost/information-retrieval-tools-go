@@ -9,7 +9,6 @@ jobs:
     working_directory: /go/src/github.com/rerost/information-retrieval-tools-go
     steps:
       - checkout
-      - run: go get github.com/direnv/direnv
       - run:
           name: test
           command: GO111MODULE=on PATH=bin:$PATH make test
