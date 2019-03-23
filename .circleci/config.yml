@@ -11,8 +11,8 @@ jobs:
       - checkout
       - run: go get github.com/direnv/direnv
       - run:
-        name: test
-        command: GO111MODULE=on PATH=bin:$PATH make test
+          name: test
+          command: GO111MODULE=on PATH=bin:$PATH make test
 
 workflows:
   version: 2
