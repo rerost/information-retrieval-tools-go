@@ -75,6 +75,18 @@ func TestInterleaving(t *testing.T) {
 			},
 		},
 		{
+			Name: "Use b case",
+			In: In{
+				PrioritizeRanking: NewDummyPrioritizeRanking(false),
+				RankingA:          []DummyItem{2, 4, 6},
+				RankingB:          []DummyItem{1, 3, 5},
+			},
+			Out: Out{
+				Error:   nil,
+				Ranking: ToRanking([]int{1, 2, 3, 4, 5, 6}),
+			},
+		},
+		{
 			Name: "Duplicate case",
 			In: In{
 				PrioritizeRanking: NewDummyPrioritizeRanking(true),
