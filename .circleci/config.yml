@@ -19,4 +19,4 @@ workflows:
   build_and_test:
     jobs:
       - test:
-        context: codecov-information-retrieval-tools-go
+          context: codecov-information-retrieval-tools-go
