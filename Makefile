@@ -10,3 +10,7 @@ test: vendor
 PHONY: coverage
 coverage:
 	go tool cover -html=coverage.txt
+
+PHONY: bench
+bench: vendor
+	go test -bench=. -race -v ./...

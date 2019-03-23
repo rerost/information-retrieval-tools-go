@@ -45,84 +45,85 @@ func ToRanking(arr []int) interleaving.Ranking {
 	return result
 }
 
-func TestInterleaving(t *testing.T) {
-	type In struct {
-		PrioritizeRanking interleaving.PrioritizeRanking
-		RankingA          interface{}
-		RankingB          interface{}
-	}
-	type Out struct {
-		Error   error
-		Ranking interleaving.Ranking
-	}
-	type InOutPair struct {
-		Name string
-		In   In
-		Out  Out
-	}
+type In struct {
+	PrioritizeRanking interleaving.PrioritizeRanking
+	RankingA          interface{}
+	RankingB          interface{}
+}
+type Out struct {
+	Error   error
+	Ranking interleaving.Ranking
+}
+type InOutPair struct {
+	Name string
+	In   In
+	Out  Out
+}
 
-	inOutPairs := []InOutPair{
-		{
-			Name: "Normal case",
-			In: In{
-				PrioritizeRanking: NewDummyPrioritizeRanking(true),
-				RankingA:          []DummyItem{1, 3, 5},
-				RankingB:          []DummyItem{2, 4, 6},
-			},
-			Out: Out{
-				Error:   nil,
-				Ranking: ToRanking([]int{1, 2, 3, 4, 5, 6}),
-			},
+var inOutPairs = []InOutPair{
+	{
+		Name: "Normal case",
+		In: In{
+			PrioritizeRanking: NewDummyPrioritizeRanking(true),
+			RankingA:          []DummyItem{1, 3, 5},
+			RankingB:          []DummyItem{2, 4, 6},
 		},
-		{
-			Name: "Use b case",
-			In: In{
-				PrioritizeRanking: NewDummyPrioritizeRanking(false),
-				RankingA:          []DummyItem{2, 4, 6},
-				RankingB:          []DummyItem{1, 3, 5},
-			},
-			Out: Out{
-				Error:   nil,
-				Ranking: ToRanking([]int{1, 2, 3, 4, 5, 6}),
-			},
+		Out: Out{
+			Error:   nil,
+			Ranking: ToRanking([]int{1, 2, 3, 4, 5, 6}),
 		},
-		{
-			Name: "Duplicate case",
-			In: In{
-				PrioritizeRanking: NewDummyPrioritizeRanking(true),
-				RankingA:          []DummyItem{1, 2, 3},
-				RankingB:          []DummyItem{1, 2, 3},
-			},
-			Out: Out{
-				Error:   nil,
-				Ranking: ToRanking([]int{1, 2, 3}),
-			},
+	},
+	{
+		Name: "Use b case",
+		In: In{
+			PrioritizeRanking: NewDummyPrioritizeRanking(false),
+			RankingA:          []DummyItem{2, 4, 6},
+			RankingB:          []DummyItem{1, 3, 5},
 		},
-		{
-			Name: "Size is different",
-			In: In{
-				PrioritizeRanking: NewDummyPrioritizeRanking(true),
-				RankingA:          ToRanking([]int{1, 2, 3}),
-				RankingB:          ToRanking([]int{}),
-			},
-			Out: Out{
-				Error:   nil,
-				Ranking: ToRanking([]int{1, 2, 3}),
-			},
+		Out: Out{
+			Error:   nil,
+			Ranking: ToRanking([]int{1, 2, 3, 4, 5, 6}),
 		},
-		{
-			Name: "Not slice passed",
-			In: In{
-				PrioritizeRanking: NewDummyPrioritizeRanking(true),
-				RankingA:          nil,
-				RankingB:          nil,
-			},
-			Out: Out{
-				Error:   errors.NotSliceError,
-				Ranking: nil,
-			},
+	},
+	{
+		Name: "Duplicate case",
+		In: In{
+			PrioritizeRanking: NewDummyPrioritizeRanking(true),
+			RankingA:          []DummyItem{1, 2, 3},
+			RankingB:          []DummyItem{1, 2, 3},
 		},
-	}
+		Out: Out{
+			Error:   nil,
+			Ranking: ToRanking([]int{1, 2, 3}),
+		},
+	},
+	{
+		Name: "Size is different",
+		In: In{
+			PrioritizeRanking: NewDummyPrioritizeRanking(true),
+			RankingA:          ToRanking([]int{1, 2, 3}),
+			RankingB:          ToRanking([]int{}),
+		},
+		Out: Out{
+			Error:   nil,
+			Ranking: ToRanking([]int{1, 2, 3}),
+		},
+	},
+	{
+		Name: "Not slice passed",
+		In: In{
+			PrioritizeRanking: NewDummyPrioritizeRanking(true),
+			RankingA:          nil,
+			RankingB:          nil,
+		},
+		Out: Out{
+			Error:   errors.NotSliceError,
+			Ranking: nil,
+		},
+	},
+}
+
+func TestInterleaving(t *testing.T) {
 	for _, inOutPair := range inOutPairs {
 		inOutPair := inOutPair
 		t.Run(inOutPair.Name, func(t *testing.T) {
