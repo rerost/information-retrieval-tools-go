@@ -9,8 +9,8 @@ jobs:
     working_directory: /go/src/github.com/rerost/information-retrieval-tools-go
     steps:
       - checkout
-      - run: eval "$(direnv hook bash)"
       - run: go get github.com/direnv/direnv
+      - run: eval "$(direnv hook bash)"
       - run: make vendor
       - run: make test
       # - run: bash <(curl -s https://codecov.io/bash)
