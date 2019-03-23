@@ -11,13 +11,8 @@ jobs:
       - checkout
       - run: go get github.com/direnv/direnv
       - run:
-        name: "test"
-        command: |
-          eval "$(direnv hook bash)"
-          direnv allow
-          make vendor
-          make test
-      # - run: bash <(curl -s https://codecov.io/bash)
+        name: test
+        command: GO111MODULE=on PATH=bin:$PATH make test
 
 workflows:
   version: 2
