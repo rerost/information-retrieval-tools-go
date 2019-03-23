@@ -11,6 +11,7 @@ jobs:
       - checkout
       - run: go get github.com/direnv/direnv
       - run:
+        name: "test"
         command: |
           eval "$(direnv hook bash)"
           direnv allow
