@@ -17,8 +17,6 @@ bench: vendor
 
 PHONY: profile
 profile:
-	: > mkdir pprof 
-	# interleaving
-	: > mkdir pprof/interleaving
+	mkdir -p pprof/interleaving
 	go test -bench=BenchmarkPerform -benchmem -o pprof/interleaving/test.bin -cpuprofile pprof/interleaving/cpu.out ./interleaving/interleaving_bench_test.go
 	go tool pprof --svg pprof/interleaving/test.bin pprof/interleaving/cpu.out > pprof/interleaving/profile.svg
