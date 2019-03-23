@@ -13,6 +13,7 @@ jobs:
       - run:
           name: test
           command: GO111MODULE=on PATH=bin:$PATH make test
+      - run: bash <(curl -s https://codecov.io/bash)
 
 workflows:
   version: 2
