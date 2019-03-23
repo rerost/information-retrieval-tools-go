@@ -1,10 +1,12 @@
 package interleaving_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/rerost/information-retrieval-tools-go/interleaving"
+	"github.com/rerost/information-retrieval-tools-go/interleaving/errors"
 )
 
 var (
@@ -25,6 +27,22 @@ func NewDummyPrioritizeRanking(isA bool) interleaving.PrioritizeRanking {
 }
 func (d DummyPrioritizeRanking) IsA() bool {
 	return d.isA
+}
+
+type DummyItem int
+
+func (e DummyItem) Key() string {
+	return fmt.Sprintf("%v", e)
+}
+
+func ToRanking(arr []int) interleaving.Ranking {
+	result := make(interleaving.Ranking, len(arr), len(arr))
+
+	for i, elem := range arr {
+		result[i] = DummyItem(elem)
+	}
+
+	return result
 }
 
 func TestInterleaving(t *testing.T) {
@@ -48,36 +66,36 @@ func TestInterleaving(t *testing.T) {
 			Name: "Normal case",
 			In: In{
 				PrioritizeRanking: NewDummyPrioritizeRanking(true),
-				RankingA:          []int{1, 3, 5},
-				RankingB:          []int{2, 4, 6},
+				RankingA:          []DummyItem{1, 3, 5},
+				RankingB:          []DummyItem{2, 4, 6},
 			},
 			Out: Out{
 				Error:   nil,
-				Ranking: []interface{}{1, 2, 3, 4, 5, 6},
+				Ranking: ToRanking([]int{1, 2, 3, 4, 5, 6}),
 			},
 		},
 		{
 			Name: "Duplicate case",
 			In: In{
 				PrioritizeRanking: NewDummyPrioritizeRanking(true),
-				RankingA:          []int{1, 2, 3},
-				RankingB:          []int{1, 2, 3},
+				RankingA:          []DummyItem{1, 2, 3},
+				RankingB:          []DummyItem{1, 2, 3},
 			},
 			Out: Out{
 				Error:   nil,
-				Ranking: []interface{}{1, 2, 3},
+				Ranking: ToRanking([]int{1, 2, 3}),
 			},
 		},
 		{
 			Name: "Size is different",
 			In: In{
 				PrioritizeRanking: NewDummyPrioritizeRanking(true),
-				RankingA:          []int{1, 2, 3},
-				RankingB:          []int{},
+				RankingA:          ToRanking([]int{1, 2, 3}),
+				RankingB:          ToRanking([]int{}),
 			},
 			Out: Out{
 				Error:   nil,
-				Ranking: []interface{}{1, 2, 3},
+				Ranking: ToRanking([]int{1, 2, 3}),
 			},
 		},
 		{
@@ -88,7 +106,7 @@ func TestInterleaving(t *testing.T) {
 				RankingB:          nil,
 			},
 			Out: Out{
-				Error:   nil,
+				Error:   errors.NotSliceError,
 				Ranking: nil,
 			},
 		},

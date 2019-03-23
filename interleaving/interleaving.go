@@ -4,7 +4,8 @@ import (
 	"github.com/rerost/information-retrieval-tools-go/interleaving/internal"
 )
 
-type Ranking = []interface{}
+type Item = internal.Item
+type Ranking = []Item
 type RawRanking = interface{}
 
 type Interleaving interface {
@@ -27,16 +28,18 @@ func NewInterleaving(prioritizeRanking PrioritizeRanking, rawRankingA, rawRankin
 	}
 
 	return &interleavingImp{
-		PrioritizeRanking: prioritizeRanking,
-		RankingA:          rankingA,
-		RankingB:          rankingB,
+		PrioritizeRanking:  prioritizeRanking,
+		RankingA:           rankingA,
+		RankingB:           rankingB,
+		AllreadyUsedKeyMap: map[string]bool{}, // Do not have parallel safety
 	}, nil
 }
 
 type interleavingImp struct {
-	PrioritizeRanking PrioritizeRanking
-	RankingA          Ranking
-	RankingB          Ranking
+	PrioritizeRanking  PrioritizeRanking
+	RankingA           Ranking
+	RankingB           Ranking
+	AllreadyUsedKeyMap map[string]bool
 }
 
 func (i *interleavingImp) Perform() Ranking {
@@ -58,15 +61,39 @@ func (i *interleavingImp) Perform() Ranking {
 
 	for iter := int64(0); iter <= resultSize; iter += 2 {
 		if i.PrioritizeRanking.IsA() {
+			var ok bool
+			rankingAIter, ok = i.pluck(i.RankingA, rankingAIter)
+			if !ok {
+				return result
+			}
 			result = append(
 				result,
 				i.RankingA[rankingAIter],
-				i.RankingB[rankingBIter],
 			)
-		} else {
+			rankingBIter, ok = i.pluck(i.RankingB, rankingBIter)
+			if !ok {
+				return result
+			}
 			result = append(
 				result,
 				i.RankingB[rankingBIter],
+			)
+		} else {
+			var ok bool
+			rankingBIter, ok = i.pluck(i.RankingB, rankingBIter)
+			if !ok {
+				return result
+			}
+			result = append(
+				result,
+				i.RankingB[rankingBIter],
+			)
+			rankingAIter, ok = i.pluck(i.RankingA, rankingAIter)
+			if !ok {
+				return result
+			}
+			result = append(
+				result,
 				i.RankingA[rankingAIter],
 			)
 		}
@@ -80,4 +107,17 @@ func (i *interleavingImp) Perform() Ranking {
 		}
 	}
 	return result
+}
+
+func (i *interleavingImp) pluck(ranking Ranking, iter int64) (int64, bool) {
+	for ; iter < int64(len(ranking)); iter++ {
+		if _, ok := i.AllreadyUsedKeyMap[ranking[iter].Key()]; ok {
+			continue
+		}
+
+		i.AllreadyUsedKeyMap[ranking[iter].Key()] = true
+		return iter, true
+	}
+
+	return 0, false
 }
