@@ -10,7 +10,12 @@ jobs:
     steps:
       - checkout
       - run: go get github.com/direnv/direnv
-      - run: eval "$(direnv hook bash)" && direnv allow && make vendor && make test
+      - run:
+        command: |
+          eval "$(direnv hook bash)"
+          direnv allow
+          make vendor
+          make test
       # - run: bash <(curl -s https://codecov.io/bash)
 
 workflows:
