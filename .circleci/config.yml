@@ -11,6 +11,7 @@ jobs:
       - checkout
       - run: eval "$(direnv hook bash)"
       - run: go get github.com/direnv/direnv
+      - run: make vendor
       - run: make test
       # - run: bash <(curl -s https://codecov.io/bash)
 
