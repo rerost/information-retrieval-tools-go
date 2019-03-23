@@ -1,9 +1,10 @@
 PHONY: vendor
 vendor:
 	go get github.com/izumin5210/gex/cmd/gex
+	gex --build
 
 PHONY: test
-test:
+test: vendor
 	gotestcover -race -coverprofile=coverage.txt -v ./... 
 
 PHONY: coverage

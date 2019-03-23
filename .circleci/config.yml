@@ -9,10 +9,11 @@ jobs:
     working_directory: /go/src/github.com/rerost/information-retrieval-tools-go
     steps:
       - checkout
-      - run: eval "$(direnv hook bash)"
       - run: go get github.com/direnv/direnv
-      - run: make test
-      # - run: bash <(curl -s https://codecov.io/bash)
+      - run:
+          name: test
+          command: GO111MODULE=on PATH=bin:$PATH make test
+      - run: bash <(curl -s https://codecov.io/bash)
 
 workflows:
   version: 2
